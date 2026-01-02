@@ -1,154 +1,89 @@
-'use client';
+import type { Page, Activity, Booking, Break, Incident, Job, Driver, SummaryData, ChartData, Vehicle, VehicleResult, VehicleBrowserEntry, VehicleModel, VehicleMake, DriverData } from './types';
+import {
+    LayoutDashboard,
+    Tractor,
+    Users,
+    Database,
+    Bell,
+    Send,
+    Briefcase,
+    FileText,
+    AlertTriangle,
+    FileDigit,
+    DollarSign,
+    LifeBuoy,
+    Settings,
+    Route,
+    MessageSquare,
+    Truck,
+    Car,
+    Building,
+    Map,
+    MapPin,
+    Wrench,
+    Clock,
+    Plane,
+  } from 'lucide-react';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useVehicleJobStore } from "@/stores/job-store";
-import { ArrowLeft, Save } from 'lucide-react';
-import type { Vehicle } from "@/lib/types";
 
-export default function EditVehiclePage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const vehicleId = searchParams.get('id');
-  const { vehicles, updateVehicle } = useVehicleJobStore();
-  
-  const [vehicle, setVehicle] = useState<Partial<Vehicle>>({
-    licensePlate: '',
-    vehicleType: '',
-    make: '',
-    model: '',
-    capacity: '',
-    status: 'Idle'
-  });
+// This navigation array is the single source of truth for the sidebar.
+export const allPages: Page[] = [
+    // Core Operations
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/dashboard/fleet-tracking', label: 'Fleet Tracking', icon: Map },
+    { href: '/dashboard/tracking', label: 'Tracking', icon: Tractor },
+    { href: '/dashboard/awaiting-allocation', label: 'Awaiting Allocation', icon: Route },
+    { href: '/dashboard/manual-dispatch', label: 'Manual Dispatch', icon: Send },
+    { href: '/dashboard/continuous-scheduler', label: 'Continuous Scheduler', icon: Clock },
+    { href: '/dashboard/inprogress', label: 'In-progress', icon: Briefcase },
 
-  useEffect(() => {
-    if (vehicleId) {
-      const existingVehicle = vehicles.find(v => v.id === vehicleId);
-      if (existingVehicle) {
-        setVehicle(existingVehicle);
-      }
-    }
-  }, [vehicleId, vehicles]);
+    // Data Management
+    { href: '/dashboard/fleet', label: 'Fleet', icon: Truck },
+    { href: '/dashboard/pilots', label: 'Pilots', icon: Users },
+    { href: '/dashboard/data', label: 'Data', icon: Database },
+    { href: '/dashboard/customer-data', label: 'Customer Data', icon: Building },
 
-  const handleSave = () => {
-    if (vehicleId && vehicle) {
-      updateVehicle(vehicleId, vehicle as Vehicle);
-      router.push('/dashboard/fleet');
-    }
-  };
+    // Financial & Reporting
+    { href: '/dashboard/invoice', label: 'Invoice', icon: FileDigit, adminOnly: true },
+    { href: '/dashboard/pricing', label: 'Pricing', icon: DollarSign, adminOnly: true },
+    
+    // Safety & Communication
+    { href: '/dashboard/sms', label: 'Communications', icon: MessageSquare },
+    { href: '/dashboard/support', label: 'Support', icon: LifeBuoy },
 
-  const handleCancel = () => {
-    router.push('/dashboard/fleet');
-  };
+    // System
+    { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+  ];
+    
+// The following mock data is kept for components that are not yet connected to live data sources.
+// It will be progressively phased out.
 
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={handleCancel}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <CardTitle className="font-headline">
-            {vehicleId ? 'Edit Vehicle' : 'Add Vehicle'}
-          </CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="licensePlate">License Plate</Label>
-            <Input
-              id="licensePlate"
-              value={vehicle.licensePlate || ''}
-              onChange={(e) => setVehicle({ ...vehicle, licensePlate: e.target.value })}
-              placeholder="Enter license plate"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="vehicleType">Vehicle Type</Label>
-            <Select
-              value={vehicle.vehicleType || ''}
-              onValueChange={(value) => setVehicle({ ...vehicle, vehicleType: value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select vehicle type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Truck">Truck</SelectItem>
-                <SelectItem value="Van">Van</SelectItem>
-                <SelectItem value="Car">Car</SelectItem>
-                <SelectItem value="Motorcycle">Motorcycle</SelectItem>
-                <SelectItem value="Bus">Bus</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="make">Make</Label>
-            <Input
-              id="make"
-              value={vehicle.make || ''}
-              onChange={(e) => setVehicle({ ...vehicle, make: e.target.value })}
-              placeholder="Enter make"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="model">Model</Label>
-            <Input
-              id="model"
-              value={vehicle.model || ''}
-              onChange={(e) => setVehicle({ ...vehicle, model: e.target.value })}
-              placeholder="Enter model"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="capacity">Capacity</Label>
-            <Input
-              id="capacity"
-              value={vehicle.capacity || ''}
-              onChange={(e) => setVehicle({ ...vehicle, capacity: e.target.value })}
-              placeholder="Enter capacity"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
-            <Select
-              value={vehicle.status || ''}
-              onValueChange={(value) => setVehicle({ ...vehicle, status: value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Idle">Idle</SelectItem>
-                <SelectItem value="On Duty">On Duty</SelectItem>
-                <SelectItem value="Offline">Offline</SelectItem>
-                <SelectItem value="Maintenance">Maintenance</SelectItem>
-                <SelectItem value="On Break">On Break</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        
-        <div className="flex justify-end gap-4 pt-4">
-          <Button variant="outline" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave}>
-            <Save className="h-4 w-4 mr-2" />
-            Save Changes
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+export const incidentData: Incident[] = [
+    { id: 'INC-001', type: 'Accident', position: [24.73, 46.69], description: 'Minor collision reported.'},
+    { id: 'INC-002', type: 'Road Closure', position: [21.49, 39.25], description: 'Street closed for construction.'}
+];
+
+export const activityReportData: Activity[] = [
+    { id: '1', startTime: '12:00', endTime: '13:00', duration: '1h 0m', status: 'Online' },
+    { id: '2', startTime: '13:00', endTime: '14:00', duration: '1h 0m', status: 'Online' },
+    { id: '3', startTime: '15:00', endTime: '15:12', duration: '12m', status: 'Online' },
+    { id: '4', startTime: '15:13', endTime: '16:00', duration: '47m', status: 'Online' },
+    { id: '5', startTime: '16:00', endTime: '17:00', duration: '1h 0m', status: 'On Trip' },
+    { id: '6', startTime: '17:00', endTime: '18:00', duration: '1h 0m', status: 'Offline' },
+];
+
+export const bookingExample: Booking = {
+    startTime: '15:12',
+    endTime: '15:13',
+    bookingNumber: '120392',
+    client: 'Carrot Cars',
+    pickupLocation: 'Blake House Admirals Way, London, E14 9UJ',
+    dropoffLocation: '40 Schooner Close, London, E14 3GG'
+};
+
+export const breakExample: Break = {
+    startTime: '14:00',
+    endTime: '14:30',
+    duration: '30 min',
+    driverCallsign: 'DRV-03'
+};

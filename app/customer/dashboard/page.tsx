@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState, Suspense, useCallback, useMemo } from 'react';
+import { useEffect, useState, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Truck, Clock, FileText, CreditCard, Pencil, Navigation, Loader2, LocateFixed, Route, Package, Star, User, Building, Landmark, Scale, DollarSign, BookUser, Car, Users, Bus, Accessibility, Baby, Newspaper } from 'lucide-react';
@@ -22,7 +22,7 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CreditCardForm from '@/components/credit-card-form';
+import { CreditCardForm } from '@/components/credit-card-form';
 import { useAwaitingJobsStore } from '@/stores/awaiting-jobs-store';
 import type { Job, Rate } from '@/lib/types';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
