@@ -14,7 +14,7 @@ type CreditCardFormProps = {
   onPaymentSuccess?: () => void;
 }
 
-export const CreditCardForm: React.FC<CreditCardFormProps> = ({ onPaymentSuccess }) => {
+const CreditCardForm: React.FC<CreditCardFormProps> = ({ onPaymentSuccess }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
   const { toast } = useToast();
@@ -86,3 +86,5 @@ export const CreditCardForm: React.FC<CreditCardFormProps> = ({ onPaymentSuccess
     </Card>
   );
 }
+
+export default CreditCardForm;

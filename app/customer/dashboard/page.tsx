@@ -22,7 +22,7 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCardForm } from '@/components/credit-card-form';
+import CreditCardForm from '@/components/credit-card-form';
 import { useAwaitingJobsStore } from '@/stores/awaiting-jobs-store';
 import type { Job, Rate } from '@/lib/types';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
