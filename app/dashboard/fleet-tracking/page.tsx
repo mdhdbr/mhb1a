@@ -34,7 +34,7 @@ function FleetTrackingPageComponent() {
   const fromDispatch = searchParams.get('from');
   const vehicleIdFromUrl = searchParams.get('vehicleId');
   
-  const initialCoords = initialLat && initialLng ? [parseFloat(initialLat), parseFloat(initialLng)] : undefined;
+  const initialCoords: [number, number] | undefined = initialLat && initialLng ? [parseFloat(initialLat), parseFloat(initialLng)] : undefined;
 
   useEffect(() => {
     // This effect handles auto-selecting a vehicle when its ID is passed in the URL.
