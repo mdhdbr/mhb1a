@@ -18,6 +18,7 @@ import type { Vehicle } from "@/lib/types";
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useAlertStore } from '@/stores/alert-store';
+import { AlertIconType } from '@/stores/alert-store';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { AlertIcon } from '@/components/alert-icon';
 import ContextMenu from '@/components/context-menu';
