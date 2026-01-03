@@ -1,4 +1,4 @@
-import type { Activity, Booking, Break, Incident, Job, Driver, SummaryData, ChartData, Vehicle, VehicleResult, VehicleBrowserEntry, VehicleModel, VehicleMake, DriverData } from './types';
+import type { Activity, Booking, Break, Incident, Job, Driver, SummaryData, ChartData, Vehicle, VehicleResult, VehicleBrowserEntry, VehicleModel, VehicleMake, DriverData } from '@/lib/types';
 import {
     LayoutDashboard,
     Tractor,
