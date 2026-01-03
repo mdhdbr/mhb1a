@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { CreditCard, User, Calendar, Lock, Loader2, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export function CreditCardForm() {
+export function CreditCardForm({ onPaymentSuccess }: { onPaymentSuccess?: () => void }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
   const { toast } = useToast();
@@ -28,6 +28,7 @@ export function CreditCardForm() {
         title: "Payment Successful!",
         description: "Your payment has been confirmed.",
       });
+      onPaymentSuccess?.();
     }, 2000);
   };
 

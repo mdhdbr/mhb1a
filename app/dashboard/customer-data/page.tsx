@@ -63,7 +63,7 @@ export default function CustomerDataPage() {
       // Simulate data change: e.g., toggle status of the first customer
       const updatedCustomers = customers.map((c, index) => {
           if (index === 0) {
-              return { ...c, status: c.status === 'Active' ? 'Inactive' : 'Active' };
+              return { ...c, status: (c.status === 'Active' ? 'Inactive' : 'Active') as 'Active' | 'Inactive' };
           }
           return c;
       });

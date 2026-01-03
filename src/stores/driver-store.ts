@@ -27,6 +27,7 @@ type DriverState = {
 type DriverActions = {
   addDriver: (driver: DriverData) => void;
   removeDrivers: (dlNos: string[]) => void;
+  updateDriver: (dlNo: string, driver: DriverData) => void;
   setDutyStartTime: (dlNo: string, time: number | null) => void;
   _updateFatigueData: () => void;
 };
@@ -99,6 +100,15 @@ export const useDriverStore = create<DriverState & DriverActions>((set, get) => 
         removeDrivers: (dlNos: string[]) => {
             const newDriverGridData = get().driverGridData.filter(
                 (driver) => !dlNos.includes(driver.dlNo)
+            );
+            set({
+                driverGridData: newDriverGridData,
+                fatigueSummary: calculateFatigueSummary(newDriverGridData),
+            });
+        },
+        updateDriver: (dlNo: string, updatedDriver: DriverData) => {
+            const newDriverGridData = get().driverGridData.map(driver =>
+                driver.dlNo === dlNo ? { ...driver, ...updatedDriver } : driver
             );
             set({
                 driverGridData: newDriverGridData,

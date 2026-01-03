@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState, Suspense, useCallback } from 'react';
+import { useEffect, useState, Suspense, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Truck, Clock, FileText, CreditCard, Pencil, Navigation, Loader2, LocateFixed, Route, Package, Star, User, Building, Landmark, Scale, DollarSign, BookUser, Car, Users, Bus, Accessibility, Baby, Newspaper } from 'lucide-react';
