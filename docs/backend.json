@@ -1,0 +1,630 @@
+
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user profile in the Pro Seed application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user profile."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user.",
+          "format": "email"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The phone number of the user."
+        },
+        "role": {
+          "type": "string",
+          "description": "The role of the user (e.g., admin, user, agent, driver)."
+        },
+        "avatar": {
+          "type": "string",
+          "description": "URL to the user's avatar image.",
+          "format": "uri"
+        },
+        "allowedPages": {
+          "type": "array",
+          "description": "A list of page paths the user is allowed to access.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "type": "string",
+          "description": "The user's online status.",
+          "enum": [
+            "online",
+            "offline"
+          ]
+        },
+        "lastSeen": {
+          "type": "string",
+          "description": "The timestamp when the user was last active.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "role"
+      ]
+    },
+    "Vehicle": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Vehicle",
+      "type": "object",
+      "description": "Represents a vehicle in the fleet.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the vehicle."
+        },
+        "licensePlate": {
+          "type": "string",
+          "description": "The license plate number of the vehicle."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of vehicle (e.g., car, truck, van)."
+        },
+        "make": {
+          "type": "string",
+          "description": "The make of the vehicle (e.g., Ford, Toyota)."
+        },
+        "model": {
+          "type": "string",
+          "description": "The model of the vehicle (e.g., F-150, Camry)."
+        },
+        "year": {
+          "type": "number",
+          "description": "The year the vehicle was manufactured."
+        },
+        "insuranceExpiryDate": {
+          "type": "string",
+          "description": "The expiry date of the vehicle's insurance.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "licensePlate",
+        "type",
+        "make",
+        "model",
+        "year",
+        "insuranceExpiryDate"
+      ]
+    },
+    "Driver": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Driver",
+      "type": "object",
+      "description": "Represents a driver in the Pro Seed application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the driver."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:1 Driver)"
+        },
+        "licenseNumber": {
+          "type": "string",
+          "description": "The driver's license number."
+        },
+        "licenseExpiryDate": {
+          "type": "string",
+          "description": "The expiry date of the driver's license.",
+          "format": "date-time"
+        },
+        "vehicleId": {
+          "type": "string",
+          "description": "Reference to Vehicle. (Relationship: Vehicle 1:N Driver)"
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "licenseNumber",
+        "licenseExpiryDate"
+      ]
+    },
+    "Job": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Job",
+      "type": "object",
+      "description": "Represents a job assignment in the Pro Seed application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the job."
+        },
+        "driverId": {
+          "type": "string",
+          "description": "Reference to Driver. (Relationship: Driver 1:N Job)"
+        },
+        "pickupLocation": {
+          "type": "string",
+          "description": "The pickup location for the job."
+        },
+        "dropoffLocation": {
+          "type": "string",
+          "description": "The dropoff location for the job."
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the job (e.g., pending, in progress, completed)."
+        },
+        "estimatedCompletionTime": {
+          "type": "string",
+          "description": "The estimated completion time for the job.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "driverId",
+        "pickupLocation",
+        "dropoffLocation",
+        "status",
+        "estimatedCompletionTime"
+      ]
+    },
+    "Pax": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Pax",
+      "type": "object",
+      "description": "Represents a passenger.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Pax."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:1 Pax)"
+        },
+        "jobId": {
+          "type": "string",
+          "description": "Reference to Job. (Relationship: Job 1:N Pax)"
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "Passenger payment method."
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "jobId",
+        "paymentMethod"
+      ]
+    },
+    "Shipper": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Shipper",
+      "type": "object",
+      "description": "Represents a shipper.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Shipper."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:1 Shipper)"
+        },
+        "companyName": {
+          "type": "string",
+          "description": "Name of the shipping company."
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "companyName"
+      ]
+    },
+    "IncidentReport": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "IncidentReport",
+      "type": "object",
+      "description": "Represents an incident report.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the IncidentReport."
+        },
+        "jobId": {
+          "type": "string",
+          "description": "Reference to Job. (Relationship: Job 1:N IncidentReport)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the incident."
+        },
+        "date": {
+          "type": "string",
+          "description": "Date of the incident.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "jobId",
+        "description",
+        "date"
+      ]
+    },
+    "Invoice": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Invoice",
+      "type": "object",
+      "description": "Represents an invoice.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Invoice."
+        },
+        "jobId": {
+          "type": "string",
+          "description": "Reference to Job. (Relationship: Job 1:1 Invoice)"
+        },
+        "amount": {
+          "type": "number",
+          "description": "Amount of the invoice."
+        },
+        "date": {
+          "type": "string",
+          "description": "Date of the invoice.",
+          "format": "date-time"
+        },
+        "emailAddress": {
+          "type": "string",
+          "description": "Email address to send the invoice to.",
+          "format": "email"
+        }
+      },
+      "required": [
+        "id",
+        "jobId",
+        "amount",
+        "date",
+        "emailAddress"
+      ]
+    },
+    "Pricing": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Pricing",
+      "type": "object",
+      "description": "Represents pricing information.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Pricing."
+        },
+        "vehicleType": {
+          "type": "string",
+          "description": "Vehicle type for the pricing (e.g., car, truck, van)."
+        },
+        "pricePerMile": {
+          "type": "number",
+          "description": "Price per mile for the vehicle type."
+        },
+        "minimumPrice": {
+          "type": "number",
+          "description": "Minimum price for the vehicle type."
+        }
+      },
+      "required": [
+        "id",
+        "vehicleType",
+        "pricePerMile",
+        "minimumPrice"
+      ]
+    },
+    "SMSMessage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SMSMessage",
+      "type": "object",
+      "description": "Represents an SMS message.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the SMS message."
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The phone number the SMS was sent to or received from."
+        },
+        "messageBody": {
+          "type": "string",
+          "description": "The content of the SMS message."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "The timestamp when the SMS message was sent or received.",
+          "format": "date-time"
+        },
+        "direction": {
+          "type": "string",
+          "description": "The direction of the message (incoming or outgoing)."
+        }
+      },
+      "required": [
+        "id",
+        "phoneNumber",
+        "messageBody",
+        "timestamp",
+        "direction"
+      ]
+    },
+    "FatigueEvent": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "FatigueEvent",
+      "type": "object",
+      "description": "Represents a driver fatigue event.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the fatigue event."
+        },
+        "driverId": {
+          "type": "string",
+          "description": "The ID of the driver."
+        },
+        "driverName": {
+          "type": "string",
+          "description": "The name of the driver."
+        },
+        "fatigueLevel": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"],
+          "description": "The calculated fatigue level."
+        },
+        "score": {
+          "type": "number",
+          "description": "A numeric score (0-100) representing the fatigue level."
+        },
+        "source": {
+          "type": "string",
+          "description": "The source of the event (e.g., driver_app, control_panel)."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The timestamp when the event was logged.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "driverId",
+        "driverName",
+        "fatigueLevel",
+        "score",
+        "source",
+        "createdAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "phone"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profile information. Path-based ownership enforced through the 'userId' parameter.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/vehicles/{vehicleId}",
+        "definition": {
+          "entityName": "Vehicle",
+          "schema": {
+            "$ref": "#/backend/entities/Vehicle"
+          },
+          "description": "Stores vehicle information.",
+          "params": [
+            {
+              "name": "vehicleId",
+              "description": "The unique identifier for the vehicle."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/drivers/{driverId}",
+        "definition": {
+          "entityName": "Driver",
+          "schema": {
+            "$ref": "#/backend/entities/Driver"
+          },
+          "description": "Stores driver information.",
+          "params": [
+            {
+              "name": "driverId",
+              "description": "The unique identifier for the driver."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/jobs/{jobId}",
+        "definition": {
+          "entityName": "Job",
+          "schema": {
+            "$ref": "#/backend/entities/Job"
+          },
+          "description": "Stores job information.  Consider adding a `members` map (denormalized from UserProfile) to manage access for collaborative features.",
+          "params": [
+            {
+              "name": "jobId",
+              "description": "The unique identifier for the job."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/paxes/{paxId}",
+        "definition": {
+          "entityName": "Pax",
+          "schema": {
+            "$ref": "#/backend/entities/Pax"
+          },
+          "description": "Stores Pax (passenger) information.",
+          "params": [
+            {
+              "name": "paxId",
+              "description": "The unique identifier for the passenger."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/shippers/{shipperId}",
+        "definition": {
+          "entityName": "Shipper",
+          "schema": {
+            "$ref": "#/backend/entities/Shipper"
+          },
+          "description": "Stores Shipper information.",
+          "params": [
+            {
+              "name": "shipperId",
+              "description": "The unique identifier for the shipper."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/incident_reports/{incidentReportId}",
+        "definition": {
+          "entityName": "IncidentReport",
+          "schema": {
+            "$ref": "#/backend/entities/IncidentReport"
+          },
+          "description": "Stores incident reports.",
+          "params": [
+            {
+              "name": "incidentReportId",
+              "description": "The unique identifier for the incident report."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/invoices/{invoiceId}",
+        "definition": {
+          "entityName": "Invoice",
+          "schema": {
+            "$ref": "#/backend/entities/Invoice"
+          },
+          "description": "Stores invoice information.",
+          "params": [
+            {
+              "name": "invoiceId",
+              "description": "The unique identifier for the invoice."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/pricing/{pricingId}",
+        "definition": {
+          "entityName": "Pricing",
+          "schema": {
+            "$ref": "#/backend/entities/Pricing"
+          },
+          "description": "Stores pricing information.",
+          "params": [
+            {
+              "name": "pricingId",
+              "description": "The unique identifier for the pricing."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/sms_messages/{smsMessageId}",
+        "definition": {
+          "entityName": "SMSMessage",
+          "schema": {
+            "$ref": "#/backend/entities/SMSMessage"
+          },
+          "description": "Stores SMS messages.",
+          "params": [
+            {
+              "name": "smsMessageId",
+              "description": "The unique identifier for the SMS message."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "roles_admin",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Documents in this collection represent admin users. Existence of a document implies admin role.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the admin user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/fatigueEvents/{eventId}",
+        "definition": {
+          "entityName": "FatigueEvent",
+          "schema": {
+            "$ref": "#/backend/entities/FatigueEvent"
+          },
+          "description": "Stores a log of driver fatigue events.",
+          "params": [
+            {
+              "name": "eventId",
+              "description": "The unique identifier for the fatigue event."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to support Pro Seed's core features, focusing on scalability, security, and ease of maintenance. Authorization Independence is achieved primarily through path-based ownership for user-specific data and membership maps for collaborative data. Segregation is applied to separate data with different access requirements (e.g., user profiles vs. global pricing). This approach allows for simple, robust security rules and efficient querying.\n\nSpecifically, UserProfiles are stored under `/users/{userId}`, providing clear ownership.  Drivers, Paxes and Shippers have related UserProfiles, establishing a 1:1 relationship and enabling consistent security rules. Jobs are stored under `/jobs/{jobId}`, which is then referenced by incident reports and invoices.  Denormalization is employed where appropriate, such as potentially including a `members` map in the Job document to quickly determine authorized users for a specific job. This structure supports QAPs by allowing secure `list` operations based on path ownership or membership roles, without requiring complex rule logic.\n\nTo handle the SMS feature, SMS messages are stored in the `/sms_messages` collection, which allows for easy querying and filtering based on phone number, time and direction. Admin-related information, like roles and settings, are stored in dedicated collections such as `/roles_admin/{userId}`. This existence-based approach simplifies security rules for admin access.  Pricing information is stored under `/pricing/{pricingId}`, allowing easy access to pricing tiers. The `fatigueEvents` collection provides a historical log for safety and compliance auditing. By following this structured approach, Pro Seed's data is organized in a way that promotes maintainability, scalability, and strong security."
+  }
+}
