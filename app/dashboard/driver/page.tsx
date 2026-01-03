@@ -35,6 +35,7 @@ import {
     Map,
     ArrowLeft
 } from 'lucide-react';
+import { serverTimestamp, type Timestamp } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
 import PreTripChecklistDialog from '@/components/pre-trip-checklist-dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -519,10 +520,13 @@ export default function DriverDashboardPage() {
 
     const handleReportIncident = () => {
         addAlert({
+            alertId: `alert-${Date.now()}`,
             type: "SOS Alert",
-            description: `Driver ${currentDriver?.name || 'Unknown'} has triggered an SOS alert. Immediate attention required.`,
-            priority: "Critical",
-            icon: 'sos'
+            severity: "critical",
+            status: "active",
+            message: `Driver ${currentDriver?.name || 'Unknown'} has triggered an SOS alert. Immediate attention required.`,
+            triggeredAt: serverTimestamp() as Timestamp,
+            source: 'driver'
         });
         toast({
             variant: "destructive",
