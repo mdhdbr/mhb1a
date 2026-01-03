@@ -4,6 +4,8 @@
 import { create } from 'zustand';
 import type { Timestamp } from 'firebase/firestore';
 
+export type AlertIconType = 'hourglass' | 'warning' | 'sos' | 'info' | 'acceptance' | 'callout' | 'landline' | 'integration' | 'flight' | 'pickup' | 'dropoff' | 'waiting';
+
 export type Alert = {
   alertId: string;
   type: string; // e.g., 'late_pickup', 'driver_offline'
@@ -14,6 +16,7 @@ export type Alert = {
   status: 'active' | 'resolved';
   message: string;
   hint?: string;
+  icon?: string; // e.g., 'sos', 'warning'
   triggeredAt: Timestamp;
   resolvedAt?: Timestamp | null;
   source: 'system' | 'driver' | 'integration';
