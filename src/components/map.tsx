@@ -225,7 +225,36 @@ const Map = ({ vehicles, onVehicleSelect, selectedVehicle, showRoutes, showIncid
 
   const handleAssignJob = (vehicle: Vehicle) => {
     if (!pendingJob) return; // Guard clause
-    const newJobId = assignJobToVehicle(vehicle.id, pendingJob);
+
+    const mappedVehicleType: Job['vehicleType'] = (() => {
+      const upper = pendingJob.vehicleType.toUpperCase();
+      if (upper.includes('VAN') || upper.includes('MPV')) return 'Van';
+      if (upper.includes('TRUCK') || upper.includes('TRAILER')) return 'Truck';
+      return pendingJob.bookingType === 'shipper' ? 'Truck' : 'Car';
+    })();
+
+    const jobToAssign: Job = {
+      id: `JOB-${Date.now().toString().slice(-6)}`,
+      title: `Manual Dispatch: ${pendingJob.vehicleType}`,
+      from: pendingJob.pickup.address,
+      to: pendingJob.dropoff.address,
+      pickupCoordinates: { lat: pendingJob.pickup.lat, lng: pendingJob.pickup.lng },
+      vehicleType: mappedVehicleType,
+      status: 'Awaiting',
+      createdAt: new Date().toISOString(),
+      createdBy: {
+        uid: 'manual-dispatch',
+        name: 'Manual Dispatch',
+      },
+      requirements: {
+        location: 'Riyadh',
+        vehicleType: pendingJob.vehicleType,
+        licenseValidity: true,
+        insuranceValidity: true,
+      },
+    };
+
+    const newJobId = assignJobToVehicle(vehicle.id, jobToAssign);
     if (newJobId) {
         toast({
             title: "Job Assigned",
@@ -252,7 +281,6 @@ const Map = ({ vehicles, onVehicleSelect, selectedVehicle, showRoutes, showIncid
         if (!isTracking) {
              mapInstance.current.setView(selectedVehicle.position, mapInstance.current.getZoom(), {
                 animate: true,
-                pan: { duration: 0.5 }
             });
         }
 
@@ -411,16 +439,13 @@ const Map = ({ vehicles, onVehicleSelect, selectedVehicle, showRoutes, showIncid
   useEffect(() => {
     if (shouldFindNearest && mapInstance.current) {
         const mapCenter = mapInstance.current.getCenter();
-        let nearestVehicle: Vehicle | null = null;
-        let minDistance = Infinity;
-
-        vehicles.forEach(vehicle => {
+        const nearestVehicle = vehicles.reduce<Vehicle | null>((nearest, vehicle) => {
             const distance = mapCenter.distanceTo(L.latLng(vehicle.position));
-            if (distance < minDistance) {
-                minDistance = distance;
-                nearestVehicle = vehicle;
-            }
-        });
+            if (!nearest) return vehicle;
+
+            const nearestDistance = mapCenter.distanceTo(L.latLng(nearest.position));
+            return distance < nearestDistance ? vehicle : nearest;
+        }, null);
 
         if (nearestVehicle) {
             onVehicleSelect(nearestVehicle);

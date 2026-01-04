@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { generateOtpSecret, encryptSecret } from '@/lib/otp';
 import QRCode from 'qrcode';
-import { adminDb, adminAuth } from '@/lib/firebase-admin';
+import { getAdminAuth, getAdminDb } from '@/lib/firebase-admin';
 
 export async function POST(req: Request) {
   try {
@@ -10,6 +10,9 @@ export async function POST(req: Request) {
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized: No token provided.' }, { status: 401 });
     }
+
+    const adminAuth = getAdminAuth();
+    const adminDb = getAdminDb();
 
     const decoded = await adminAuth.verifyIdToken(token);
     const uid = decoded.uid;

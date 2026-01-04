@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useEffect } from 'react';
-import { useAlertStore, type Alert } from './alert-store';
-import { useVehicleJobStore } from './job-store';
-import { useAwaitingJobsStore } from './awaiting-jobs-store';
+import { useEffect, useMemo, useState } from 'react';
+import { useAlertStore, type Alert } from '@/stores/alert-store';
+import { useVehicleJobStore } from '@/stores/job-store';
+import { useAwaitingJobsStore } from '@/stores/awaiting-jobs-store';
 import { differenceInMinutes, formatDistanceToNow } from 'date-fns';
 import { useFirestore, useUser } from '@/firebase';
-import { collection, onSnapshot, query, orderBy, limit, type Timestamp } from 'firebase/firestore';
-import { useUserStore } from './user-store';
+import { collection, onSnapshot, query, orderBy, limit, Timestamp } from 'firebase/firestore';
+import { useUserStore } from '@/stores/user-store';
 import type { UserProfile, FatigueEvent } from '@/lib/types';
 
 
@@ -20,36 +20,58 @@ type FatigueEventFromFirestore = Omit<FatigueEvent, 'createdAt'> & {
 
 // Map the Firestore event to a UI Alert
 const mapFatigueEventToAlert = (event: FatigueEventFromFirestore): Alert => {
-    const priority = event.fatigueLevel.charAt(0).toUpperCase() + event.fatigueLevel.slice(1) as Alert['priority'];
-    
+    const severity: Alert['severity'] = event.fatigueLevel === 'critical'
+        ? 'critical'
+        : event.fatigueLevel === 'high'
+            ? 'warning'
+            : 'info';
+
     return {
-        id: event.id, // Use Firestore document ID as the unique alert ID
-        type: `Fatigue Alert: ${priority}`,
-        description: `Driver ${event.driverName} has reported fatigue. Score: ${event.score}`,
-        time: event.createdAt ? formatDistanceToNow(event.createdAt.toDate(), { addSuffix: true }) : 'Just now',
-        priority: priority,
+        alertId: event.id,
+        type: `Fatigue Alert: ${event.fatigueLevel}`,
+        severity,
+        status: 'active',
+        message: `Driver ${event.driverName} has reported fatigue. Score: ${event.score}. ${event.createdAt ? formatDistanceToNow(event.createdAt.toDate(), { addSuffix: true }) : 'Just now'}`,
         icon: 'sos',
+        triggeredAt: event.createdAt,
+        source: 'driver',
+        metadata: {
+            driverName: event.driverName,
+            fatigueLevel: event.fatigueLevel,
+            score: event.score,
+        },
     };
 };
 
 
-const generateAlerts = (): Omit<Alert, 'id' | 'time'>[] => {
+const mapPriorityToSeverity = (priority: 'Low' | 'Medium' | 'High' | 'Critical'): Alert['severity'] => {
+    if (priority === 'Critical') return 'critical';
+    if (priority === 'High') return 'warning';
+    return 'info';
+};
+
+const generateAlerts = (): Alert[] => {
     const awaitingJobs = useAwaitingJobsStore.getState().awaitingJobs;
     const vehicles = useVehicleJobStore.getState().vehicles;
     const now = new Date();
-    const newAlerts: Omit<Alert, 'id' | 'time'>[] = [];
+    const newAlerts: Alert[] = [];
 
     // 1. Awaiting Allocation Alert
     awaitingJobs.forEach(job => {
         if (job.createdAt) {
             const minutesPending = differenceInMinutes(now, new Date(job.createdAt));
             if (minutesPending > 5) {
+                const priority: 'High' = 'High';
                 newAlerts.push({
-                    id: `pending-${job.id}`,
+                    alertId: `pending-${job.id}`,
                     type: 'Job Pending Allocation',
-                    description: `Job #${job.id} awaiting allocation for ${minutesPending} min.`,
-                    priority: 'High',
+                    severity: mapPriorityToSeverity(priority),
+                    jobId: job.id,
+                    status: 'active',
+                    message: `Job #${job.id} awaiting allocation for ${minutesPending} min.`,
                     icon: 'warning',
+                    triggeredAt: Timestamp.now(),
+                    source: 'system',
                 });
             }
         }
@@ -64,26 +86,36 @@ const generateAlerts = (): Omit<Alert, 'id' | 'time'>[] => {
         if (job.status === 'Received' && job.bookingTime) {
             const minutesSinceReceived = differenceInMinutes(now, new Date(job.bookingTime));
             if (minutesSinceReceived > 2) {
+                const priority: 'High' = 'High';
                 newAlerts.push({
-                    id: `late-accept-${job.id}`,
+                    alertId: `late-accept-${job.id}`,
                     type: 'Late Accept',
-                    description: `Job #${job.id} was not accepted by driver.`,
-                    priority: 'High',
+                    severity: mapPriorityToSeverity(priority),
+                    jobId: job.id,
+                    status: 'active',
+                    message: `Job #${job.id} was not accepted by driver.`,
+                    hint: 'The text of the hint is defined by the Planning Screen Administration settings.',
                     icon: 'acceptance',
-                    hint: 'The text of the hint is defined by the Planning Screen Administration settings.'
+                    triggeredAt: Timestamp.now(),
+                    source: 'system',
                 });
             }
         }
 
         // Job Changes Alert
         if (job.id === 'JOB-003' && job.status === 'Received') {
+             const priority: 'Medium' = 'Medium';
              newAlerts.push({
-                id: `job-changes-${job.id}`,
+                alertId: `job-changes-${job.id}`,
                 type: 'Job Changes',
-                description: `Job #${job.id} was updated. Awaiting driver confirmation.`,
-                priority: 'Medium',
+                severity: mapPriorityToSeverity(priority),
+                jobId: job.id,
+                status: 'active',
+                message: `Job #${job.id} was updated. Awaiting driver confirmation.`,
                 icon: 'acceptance',
-                hint: 'Driver should accept Job changes'
+                hint: 'Driver should accept Job changes',
+                triggeredAt: Timestamp.now(),
+                source: 'system',
             });
         }
         
@@ -95,13 +127,18 @@ const generateAlerts = (): Omit<Alert, 'id' | 'time'>[] => {
                 const pickupTime = new Date(`${year}-${month}-${day}T${timePart}`);
                 
                 if (now > pickupTime && differenceInMinutes(now, pickupTime) > 15) {
+                     const priority: 'High' = 'High';
                      newAlerts.push({
-                        id: `late-pickup-${job.id}`,
+                        alertId: `late-pickup-${job.id}`,
                         type: 'Late to Pickup',
-                        description: `Driver ${driver.name} is >15m late for pickup for job #${job.id}.`,
-                        priority: 'High',
+                        severity: mapPriorityToSeverity(priority),
+                        jobId: job.id,
+                        status: 'active',
+                        message: `Driver ${driver.name} is >15m late for pickup for job #${job.id}.`,
                         icon: 'pickup',
-                        hint: 'The text of the hint is defined by the Planning Screen Administration settings.'
+                        hint: 'The text of the hint is defined by the Planning Screen Administration settings.',
+                        triggeredAt: Timestamp.now(),
+                        source: 'system',
                     });
                 }
             } catch(e) {
@@ -115,13 +152,18 @@ const generateAlerts = (): Omit<Alert, 'id' | 'time'>[] => {
             // This is a simulation. A real implementation would parse eta and compare to now.
             // For demo, let's trigger it for a specific job.
             if (job.id === 'JOB-004') {
+                const priority: 'High' = 'High';
                 newAlerts.push({
-                    id: `late-dropoff-${job.id}`,
+                    alertId: `late-dropoff-${job.id}`,
                     type: 'Late to Drop Off',
-                    description: `Driver ${driver.name} is expected to be late for drop-off for job #${job.id}.`,
-                    priority: 'High',
+                    severity: mapPriorityToSeverity(priority),
+                    jobId: job.id,
+                    status: 'active',
+                    message: `Driver ${driver.name} is expected to be late for drop-off for job #${job.id}.`,
                     icon: 'dropoff',
-                    hint: 'The text of the hint is defined by the Planning Screen Administration settings.'
+                    hint: 'The text of the hint is defined by the Planning Screen Administration settings.',
+                    triggeredAt: Timestamp.now(),
+                    source: 'system',
                 });
             }
         }
@@ -134,13 +176,18 @@ const generateAlerts = (): Omit<Alert, 'id' | 'time'>[] => {
                 const arrivedTime = new Date(`${year}-${month}-${day}T${timePart}`);
                 const waitingMinutes = differenceInMinutes(now, arrivedTime);
                 if (waitingMinutes > 10) {
+                    const priority: 'Medium' = 'Medium';
                     newAlerts.push({
-                       id: `waiting-time-${job.id}`,
+                       alertId: `waiting-time-${job.id}`,
                        type: 'Waiting Time',
-                       description: `Driver for job #${job.id} has been waiting at pickup >10 min.`,
-                       priority: 'Medium',
+                       severity: mapPriorityToSeverity(priority),
+                       jobId: job.id,
+                       status: 'active',
+                       message: `Driver for job #${job.id} has been waiting at pickup >10 min.`,
                        icon: 'waiting',
-                       hint: 'The text of the hint is defined by the Planning Screen Administration settings.'
+                       hint: 'The text of the hint is defined by the Planning Screen Administration settings.',
+                       triggeredAt: Timestamp.now(),
+                       source: 'system',
                     });
                 }
             } catch(e) {
@@ -150,61 +197,86 @@ const generateAlerts = (): Omit<Alert, 'id' | 'time'>[] => {
         
         // Driver is Offline Alert
         if (status === 'Offline' && job.id && !['Completed', 'Idle', 'Empty'].includes(job.status)) {
+             const priority: 'Critical' = 'Critical';
              newAlerts.push({
-                id: `offline-${job.id}`,
+                alertId: `offline-${job.id}`,
                 type: 'Driver is Offline',
-                description: `Driver ${driver.name} is offline but has an uncompleted job (#${job.id}).`,
-                priority: 'Critical',
+                severity: mapPriorityToSeverity(priority),
+                jobId: job.id,
+                status: 'active',
+                message: `Driver ${driver.name} is offline but has an uncompleted job (#${job.id}).`,
                 icon: 'sos',
-                hint: 'Driver is offline'
+                hint: 'Driver is offline',
+                triggeredAt: Timestamp.now(),
+                source: 'system',
             });
         }
         
         // Flight Number Alert
         if (job.flight) {
+             const priority: 'Medium' = 'Medium';
              newAlerts.push({
-                id: `flight-${job.id}`,
+                alertId: `flight-${job.id}`,
                 type: 'Flight Number',
-                description: `Job #${job.id} has a flight number (${job.flight}). Check flight status.`,
-                priority: 'Medium',
+                severity: mapPriorityToSeverity(priority),
+                jobId: job.id,
+                status: 'active',
+                message: `Job #${job.id} has a flight number (${job.flight}). Check flight status.`,
                 icon: 'flight',
-                hint: 'Flight number has been provided for this job'
+                hint: 'Flight number has been provided for this job',
+                triggeredAt: Timestamp.now(),
+                source: 'system',
             });
         }
 
         // Callout Alert (simulated)
         if (vehicle.callsign === 'KING-1') {
+            const priority: 'Medium' = 'Medium';
             newAlerts.push({
-                id: `callout-${job.id}`,
+                alertId: `callout-${job.id}`,
                 type: 'Callout',
-                description: `Job #${job.id}: Driver should callout at pickup location`,
-                priority: 'Medium',
+                severity: mapPriorityToSeverity(priority),
+                jobId: job.id,
+                status: 'active',
+                message: `Job #${job.id}: Driver should callout at pickup location`,
                 icon: 'callout',
-                hint: 'Driver must perform a callout at the specified location.'
+                hint: 'Driver must perform a callout at the specified location.',
+                triggeredAt: Timestamp.now(),
+                source: 'system',
             });
         }
         
         // Landline Alert (simulated)
         if (job.account === 'Riyadh Foods Co.') { // This client has a landline number
+             const priority: 'Low' = 'Low';
              newAlerts.push({
-                id: `landline-${job.id}`,
+                alertId: `landline-${job.id}`,
                 type: 'Landline',
-                description: `Passenger number for Job #${job.id} is a landline.`,
-                priority: 'Low',
+                severity: mapPriorityToSeverity(priority),
+                jobId: job.id,
+                status: 'active',
+                message: `Passenger number for Job #${job.id} is a landline.`,
                 icon: 'landline',
-                hint: 'SMS cannot be sent to a landline number'
+                hint: 'SMS cannot be sent to a landline number',
+                triggeredAt: Timestamp.now(),
+                source: 'system',
             });
         }
         
         // Integration Alert (simulated)
         if (job.account === 'Global Petro Services') { // This client uses an integration
+             const priority: 'Low' = 'Low';
              newAlerts.push({
-                id: `integration-${job.id}`,
+                alertId: `integration-${job.id}`,
                 type: 'Integration',
-                description: `Job #${job.id} was received via a booking integration.`,
-                priority: 'Low',
+                severity: mapPriorityToSeverity(priority),
+                jobId: job.id,
+                status: 'active',
+                message: `Job #${job.id} was received via a booking integration.`,
                 icon: 'integration',
-                hint: 'This job originated from an external partner system.'
+                hint: 'This job originated from an external partner system.',
+                triggeredAt: Timestamp.now(),
+                source: 'integration',
             });
         }
 
@@ -212,72 +284,6 @@ const generateAlerts = (): Omit<Alert, 'id' | 'time'>[] => {
 
     return newAlerts;
 };
-
-
-function useSystemAlertsInitializer() {
-    const { _setSystemAlerts } = useAlertStore();
-
-    useEffect(() => {
-        const updateAlerts = () => {
-            const rawAlerts = generateAlerts();
-            const finalAlerts = rawAlerts.map(a => ({
-                ...a,
-                id: a.id || `${a.type}-${a.description}`.replace(/\s+/g, '-').toLowerCase(),
-                time: 'Just now'
-            }));
-            _setSystemAlerts(finalAlerts);
-        };
-        
-        // Initial generation
-        updateAlerts();
-
-        // Subscribe to changes in other stores
-        const unsubVehicleJobs = useVehicleJobStore.subscribe(updateAlerts);
-        const unsubAwaitingJobs = useAwaitingJobsStore.subscribe(updateAlerts);
-        
-        // Set up a timer for periodic regeneration
-        const intervalId = setInterval(updateAlerts, 15000); // Regenerate every 15 seconds
-
-        // Cleanup on unmount
-        return () => {
-            clearInterval(intervalId);
-            unsubVehicleJobs();
-            unsubAwaitingJobs();
-        };
-
-    }, [_setSystemAlerts]);
-}
-
-function useFatigueAlertsInitializer() {
-    const firestore = useFirestore();
-    const { _setFatigueAlerts } = useAlertStore();
-
-    useEffect(() => {
-        if (!firestore) return;
-
-        const q = query(
-            collection(firestore, "fatigueEvents"),
-            orderBy("createdAt", "desc"),
-            limit(50)
-        );
-
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const data = snapshot.docs.map(d => ({
-                id: d.id,
-                ...(d.data() as Omit<FatigueEvent, 'createdAt'>),
-                createdAt: d.data().createdAt as Timestamp,
-            }));
-            const mappedAlerts = data.map(mapFatigueEventToAlert);
-            _setFatigueAlerts(mappedAlerts);
-        }, (error) => {
-            console.error("Error fetching fatigueEvents:", error);
-            _setFatigueAlerts([]); // Clear fatigue alerts on error
-        });
-
-        return () => unsubscribe();
-    }, [firestore, _setFatigueAlerts]);
-}
-
 
 function useUsersInitializer() {
   const { isUserLoading } = useUser();
@@ -308,8 +314,59 @@ function useUsersInitializer() {
 }
 
 export function StoreInitializer() {
-    useSystemAlertsInitializer();
-    useFatigueAlertsInitializer();
+    const firestore = useFirestore();
+    const { setAlerts } = useAlertStore();
+    const [systemAlerts, setSystemAlerts] = useState<Alert[]>([]);
+    const [fatigueAlerts, setFatigueAlerts] = useState<Alert[]>([]);
+
+    useEffect(() => {
+        const updateAlerts = () => {
+            setSystemAlerts(generateAlerts());
+        };
+
+        updateAlerts();
+        const unsubVehicleJobs = useVehicleJobStore.subscribe(updateAlerts);
+        const unsubAwaitingJobs = useAwaitingJobsStore.subscribe(updateAlerts);
+        const intervalId = setInterval(updateAlerts, 15000);
+
+        return () => {
+            clearInterval(intervalId);
+            unsubVehicleJobs();
+            unsubAwaitingJobs();
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!firestore) return;
+
+        const q = query(
+            collection(firestore, "fatigueEvents"),
+            orderBy("createdAt", "desc"),
+            limit(50)
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const data = snapshot.docs.map(d => ({
+                ...(d.data() as Omit<FatigueEvent, 'createdAt'>),
+                id: d.id,
+                createdAt: d.data().createdAt as Timestamp,
+            }));
+            const mappedAlerts = data.map(mapFatigueEventToAlert);
+            setFatigueAlerts(mappedAlerts);
+        }, (error) => {
+            console.error("Error fetching fatigueEvents:", error);
+            setFatigueAlerts([]);
+        });
+
+        return () => unsubscribe();
+    }, [firestore]);
+
+    const combinedAlerts = useMemo(() => [...fatigueAlerts, ...systemAlerts], [fatigueAlerts, systemAlerts]);
+
+    useEffect(() => {
+        setAlerts(combinedAlerts);
+    }, [combinedAlerts, setAlerts]);
+
     useUsersInitializer();
     return null;
 }

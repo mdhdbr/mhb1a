@@ -18,12 +18,15 @@ import {
   ChartLegendContent,
 } from '@/components/ui/chart';
 import type { ChartData } from '@/lib/types';
-import { Skeleton } from './ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useDriverStore } from '@/stores/driver-store';
+
+type ChartDatum = ChartData[number];
 
 const chartConfig = {
   value: {
     label: 'Drivers',
+    color: "hsl(var(--chart-1))",
   },
   LOW: {
     label: 'Low',
@@ -92,7 +95,7 @@ export default function DynamicDriverFatigueChart() {
                 cursor={false}
                 content={<ChartTooltipContent 
                     formatter={(value, name, item) => {
-                      const itemPayload = item.payload as ChartData;
+                      const itemPayload = item.payload as ChartDatum;
                       const colorKey = itemPayload.name.toUpperCase() as keyof typeof chartConfig;
                       const color = chartConfig[colorKey]?.color || '#ccc';
                       return (

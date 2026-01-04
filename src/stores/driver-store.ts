@@ -117,7 +117,7 @@ export const useDriverStore = create<DriverState & DriverActions>((set, get) => 
         },
         setDutyStartTime: (dlNo: string, time: number | null) => {
             const newDriverGridData = get().driverGridData.map(driver =>
-                driver.dlNo === dlNo ? { ...driver, dutyStartTime: time, status: time ? 'On Duty' : 'Offline' } : driver
+                driver.dlNo === dlNo ? { ...driver, dutyStartTime: time, status: time ? ('On Duty' as const) : ('Offline' as const) } : driver
             );
             set({
                 driverGridData: newDriverGridData,

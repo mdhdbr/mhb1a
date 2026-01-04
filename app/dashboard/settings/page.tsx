@@ -219,7 +219,12 @@ const AlertsTab = () => {
                                 id={`${ruleKey}-time`}
                                 type="number"
                                 value={rule.threshold || ''}
-                                onChange={(e) => setRuleThreshold(ruleKey, parseInt(e.target.value, 10))}
+                                onChange={(e) => {
+                                    const next = parseInt(e.target.value, 10);
+                                    if (Number.isFinite(next)) {
+                                        setRuleThreshold(ruleKey as AlertTimeThreshold, next);
+                                    }
+                                }}
                                 className="w-20"
                             />
                             <span className="text-sm text-muted-foreground">{thresholdUnit}</span>

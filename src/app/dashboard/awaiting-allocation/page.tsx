@@ -85,7 +85,7 @@ export default function AwaitingAllocationPage() {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const { toast } = useToast();
   
-  const getAlertForJob = (jobId: string) => alerts.find(alert => alert.description.includes(jobId));
+  const getAlertForJob = (jobId: string) => alerts.find(alert => alert.jobId === jobId || alert.message.includes(jobId));
 
   const handleFindDriver = async (job: Job) => {
     setIsLoading(job.id);
@@ -210,10 +210,12 @@ export default function AwaitingAllocationPage() {
                           {jobAlert && (
                             <TooltipProvider>
                               <Tooltip>
-                                <TooltipTrigger><AlertIcon type={jobAlert.icon} /></TooltipTrigger>
+                                <TooltipTrigger>
+                                  <AlertIcon type={(jobAlert.icon as any) || 'warning'} />
+                                </TooltipTrigger>
                                 <TooltipContent>
                                   <p className="font-semibold">{jobAlert.type}</p>
-                                  <p>{jobAlert.hint || jobAlert.description}</p>
+                                  <p>{jobAlert.hint || jobAlert.message}</p>
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>

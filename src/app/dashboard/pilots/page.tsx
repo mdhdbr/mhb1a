@@ -36,6 +36,24 @@ const getFatigueVariant = (level: 'Critical' | 'High' | 'Medium' | 'Low' | null)
     }
 }
 
+const formatFatigueLevel = (
+  level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' | null
+): 'Low' | 'Medium' | 'High' | 'Critical' | null => {
+  if (!level) return null;
+  switch (level) {
+    case 'LOW':
+      return 'Low';
+    case 'MEDIUM':
+      return 'Medium';
+    case 'HIGH':
+      return 'High';
+    case 'CRITICAL':
+      return 'Critical';
+    default:
+      return null;
+  }
+};
+
 const DutyHoursDisplay = ({ dutyStartTime }: { dutyStartTime: number | null | undefined }) => {
     const [dutyHours, setDutyHours] = useState('-');
 
@@ -179,6 +197,7 @@ export default function PilotsPage() {
             <TableBody>
               {filteredPilots.map((pilot) => {
                   const fatigueLevel = getFatigueLevel(pilot.dutyStartTime);
+                  const formattedFatigueLevel = formatFatigueLevel(fatigueLevel);
                   return (
                     <ContextMenu key={pilot.dlNo} menuItems={<PilotContextMenu pilot={pilot} />}>
                       <TableRow>
@@ -193,8 +212,8 @@ export default function PilotsPage() {
                           <DutyHoursDisplay dutyStartTime={pilot.dutyStartTime} />
                         </TableCell>
                         <TableCell>
-                            {fatigueLevel ? (
-                                <Badge variant={getFatigueVariant(fatigueLevel)}>{fatigueLevel}</Badge>
+                            {formattedFatigueLevel ? (
+                                <Badge variant={getFatigueVariant(formattedFatigueLevel)}>{formattedFatigueLevel}</Badge>
                             ) : (
                                 <span className="text-muted-foreground">-</span>
                             )}

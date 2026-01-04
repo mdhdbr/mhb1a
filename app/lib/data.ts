@@ -1,6 +1,6 @@
 
 
-import type { Page, Activity, Booking, Break, Incident } from './types';
+import type { Page, Activity, Booking, Break, Incident } from '@/lib/types';
 import {
     LayoutDashboard,
     Tractor,

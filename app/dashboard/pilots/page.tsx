@@ -90,6 +90,11 @@ export default function PilotsPage() {
     }
 }
 
+  const formatFatigueLevel = (level: string | null) => {
+    if (!level) return null;
+    return (level.charAt(0) + level.slice(1).toLowerCase()) as 'Critical' | 'High' | 'Medium' | 'Low';
+  };
+
   const filteredPilots = useMemo(() => {
     const lowercasedFilter = filter.toLowerCase();
     
@@ -143,7 +148,7 @@ export default function PilotsPage() {
             </TableHeader>
             <TableBody>
               {filteredPilots.map((pilot) => {
-                  const fatigueLevel = getFatigueLevel(pilot.dutyStartTime);
+                  const fatigueLevel = formatFatigueLevel(getFatigueLevel(pilot.dutyStartTime));
                   const dutyHours = pilot.dutyStartTime 
                     ? `${Math.floor((Date.now() - pilot.dutyStartTime) / 3600000)}h ${Math.floor(((Date.now() - pilot.dutyStartTime) % 3600000) / 60000)}m`
                     : '-';

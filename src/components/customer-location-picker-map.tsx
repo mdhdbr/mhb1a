@@ -7,7 +7,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import L, { Map as LeafletMap, Marker, LatLng, Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-geosearch/dist/geosearch.css';
-import { OpenStreetMapProvider, SearchResult } from 'leaflet-geosearch';
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Check, Search, GripVertical } from 'lucide-react';
@@ -40,8 +40,16 @@ const dropoffIcon = createCustomIcon('red');
 type LocationState = { lat: number, lng: number, address: string };
 type SelectionMode = 'pickup' | 'dropoff' | null;
 
-const LocationSearchInput = ({ onResultSelect, placeholder, value, onChange, onFocus }: { onResultSelect: (result: SearchResult<any>) => void; placeholder?: string, value: string, onChange: (value: string) => void, onFocus: () => void }) => {
-    const [results, setResults] = useState<SearchResult<any>[]>([]);
+type GeoSearchResult = {
+    x: number;
+    y: number;
+    label: string;
+    bounds?: [number, number][];
+    raw?: unknown;
+};
+
+const LocationSearchInput = ({ onResultSelect, placeholder, value, onChange, onFocus }: { onResultSelect: (result: GeoSearchResult) => void; placeholder?: string, value: string, onChange: (value: string) => void, onFocus: () => void }) => {
+    const [results, setResults] = useState<GeoSearchResult[]>([]);
     const provider = useRef(new OpenStreetMapProvider());
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -51,7 +59,7 @@ const LocationSearchInput = ({ onResultSelect, placeholder, value, onChange, onF
             return;
         }
         const searchResults = await provider.current.search({ query: searchQuery });
-        setResults(searchResults);
+        setResults(searchResults as GeoSearchResult[]);
     };
     
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +73,7 @@ const LocationSearchInput = ({ onResultSelect, placeholder, value, onChange, onF
         }, 500); // 500ms debounce
     };
 
-    const handleSelect = (result: SearchResult<any>) => {
+    const handleSelect = (result: GeoSearchResult) => {
         onResultSelect(result);
         setResults([]);
         onChange(result.label);
@@ -228,7 +236,7 @@ export default function CustomerLocationPickerMap() {
         }
     };
 
-    const setLocationFromSearchResult = (result: SearchResult<any>, type: 'pickup' | 'dropoff') => {
+    const setLocationFromSearchResult = (result: GeoSearchResult, type: 'pickup' | 'dropoff') => {
         const location = { lat: result.y, lng: result.x, address: result.label };
         if (type === 'pickup') {
             setPickupLocation(location);

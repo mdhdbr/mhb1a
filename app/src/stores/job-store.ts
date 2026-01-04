@@ -3,7 +3,7 @@
 
 import { create } from 'zustand';
 import type { Vehicle, VehicleJob, DriverData, Job } from '@/lib/types';
-import { useDriverStore, StoredDriverData } from './driver-store';
+import { useDriverStore, StoredDriverData } from '@/stores/driver-store';
 import { format, formatDistanceToNow, subMinutes } from 'date-fns';
 
 const generateVehicles = (driverGridData: StoredDriverData[]): Vehicle[] => {
@@ -166,12 +166,9 @@ export const useVehicleJobStore = create<VehicleJobState>((set, get) => {
 
   // Subscribe to the driver store to update vehicles when driver data changes.
   // This ensures all components using useVehicleJobStore get updated data.
-  useDriverStore.subscribe(
-    (state) => state.driverGridData,
-    (driverGridData) => {
-      set({ vehicles: generateVehicles(driverGridData) });
-    }
-  );
+  useDriverStore.subscribe((state) => {
+    set({ vehicles: generateVehicles(state.driverGridData) });
+  });
 
   return {
     ...initialState,

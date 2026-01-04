@@ -29,7 +29,8 @@ import {
 import { useAuth, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
-import { allPages, Page } from '@/lib/data';
+import { allPages } from '@/lib/data';
+import type { Page } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { getInitials } from '@/lib/utils';
 import { SidebarMenuSkeleton } from './ui/sidebar';

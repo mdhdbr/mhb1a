@@ -42,6 +42,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useAlertStore } from '@/stores/alert-store';
+import { Timestamp } from 'firebase/firestore';
 
 const ActionButton = ({ icon, label, onClick, disabled }: { icon: React.ReactNode, label: string, onClick?: () => void, disabled?: boolean }) => (
     <div className="flex flex-col items-center gap-2 text-center">
@@ -435,11 +436,14 @@ export default function DriverDashboardPage() {
 
     const handleReportIncident = () => {
         addAlert({
-            type: "SOS Alert",
-            description: "Driver Ahmed has triggered an SOS alert. Immediate attention required.",
-            time: "Now",
-            priority: "Critical",
-            icon: <AlertTriangle className="h-5 w-5 text-white" />
+            alertId: `driver-sos-${Date.now()}`,
+            type: 'sos_alert',
+            severity: 'critical',
+            status: 'active',
+            message: 'Driver Ahmed has triggered an SOS alert. Immediate attention required.',
+            icon: 'sos',
+            triggeredAt: Timestamp.now(),
+            source: 'driver',
         });
         toast({
             variant: "destructive",

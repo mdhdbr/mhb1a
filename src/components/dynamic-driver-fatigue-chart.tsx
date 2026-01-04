@@ -24,6 +24,7 @@ import { useDriverStore } from '@/stores/driver-store';
 const chartConfig = {
   value: {
     label: 'Drivers',
+    color: "hsl(var(--chart-2))",
   },
   LOW: {
     label: 'Low',
@@ -56,7 +57,7 @@ export default function DynamicDriverFatigueChart() {
     setIsClient(true);
   }, []);
 
-  const fatigueData: ChartData[] = useMemo(() => {
+  const fatigueData: ChartData = useMemo(() => {
     if (!fatigueSummary) return [];
     
     return Object.entries(fatigueSummary).map(([name, value]) => ({
@@ -98,7 +99,7 @@ export default function DynamicDriverFatigueChart() {
                 cursor={false}
                 content={<ChartTooltipContent 
                     formatter={(value, name, item) => {
-                      const itemPayload = item.payload as ChartData;
+                      const itemPayload = item.payload as ChartData[number];
                       const colorKey = itemPayload.name.toUpperCase() as keyof typeof chartConfig;
                       const color = chartConfig[colorKey]?.color || '#ccc';
                       return (

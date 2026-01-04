@@ -23,9 +23,9 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import Logo from '@/components/icons/logo';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Button } from './ui/button';
-import { Separator } from './ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,7 +35,8 @@ import {
 import { useAuth, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
-import { allPages, Page } from '@/lib/data';
+import { allPages } from '@/lib/data';
+import type { Page } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 
 type UserProfile = {
@@ -68,7 +69,7 @@ const renderSubmenu = (item: Page, pathname: string) => {
                   asChild
                   isActive={pathname === child.href}
                   size="sm"
-                  variant="ghost"
+                  variant="default"
                   className="w-full justify-start h-8"
                 >
                   <Link href={child.href!}>{child.label}</Link>

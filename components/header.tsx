@@ -1,15 +1,15 @@
 
 'use client';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { LogOut, Settings } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import MapToolbar from './map-toolbar';
+import MapToolbar from '@/components/map-toolbar';
 import { useAuth, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,

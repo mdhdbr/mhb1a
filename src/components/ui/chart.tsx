@@ -380,8 +380,6 @@ export const ChartRadialBar = RechartsPrimitive.RadialBar
 export const ChartRadialBarChart = RechartsPrimitive.RadialBarChart
 export const ChartLabelList = RechartsPrimitive.LabelList
 
-export type { ChartData as ChartProps } from "recharts"
-
 export const Chart = Object.assign(ChartContainer, {
   Area: ChartArea,
   AreaChart: ChartAreaChart,

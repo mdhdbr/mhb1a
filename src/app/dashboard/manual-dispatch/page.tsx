@@ -221,7 +221,7 @@ function ManualDispatchContent() {
             licenseValidity: true,
             insuranceValidity: true,
         },
-        clientName: 'Innovate LLC', // Placeholder
+        customerName: 'Innovate LLC', // Placeholder
         paymentMethod: paymentMethod === 'card' ? 'Card' : (paymentMethod === 'invoice' ? 'Invoice' : 'Cash'),
         paymentStatus: isCardPaid ? 'Paid' : 'Unpaid'
     };

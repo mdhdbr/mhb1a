@@ -41,7 +41,7 @@ export default function DashboardPage() {
   }, [vehicles, driverGridData]);
 
   const criticalAlertsCount = useMemo(() => {
-    return alerts.filter(alert => alert.priority === 'Critical').length;
+    return alerts.filter(alert => alert.severity === 'critical').length;
   }, [alerts]);
 
 

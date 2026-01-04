@@ -36,6 +36,24 @@ const getFatigueVariant = (level: 'Critical' | 'High' | 'Medium' | 'Low' | null)
     }
 }
 
+const formatFatigueLevel = (
+  level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' | null
+): 'Low' | 'Medium' | 'High' | 'Critical' | null => {
+  if (!level) return null;
+  switch (level) {
+    case 'LOW':
+      return 'Low';
+    case 'MEDIUM':
+      return 'Medium';
+    case 'HIGH':
+      return 'High';
+    case 'CRITICAL':
+      return 'Critical';
+    default:
+      return null;
+  }
+};
+
 const DutyHoursDisplay = ({ dutyStartTime }: { dutyStartTime: number | null | undefined }) => {
     const [dutyHours, setDutyHours] = useState('-');
 
@@ -179,13 +197,18 @@ export default function DriversPage() {
             <TableBody>
               {filteredDrivers.map((driver) => {
                   const fatigueLevel = getFatigueLevel(driver.dutyStartTime);
+                  const formattedFatigueLevel = formatFatigueLevel(fatigueLevel);
                   return (
                       <TableRow key={driver.dlNo}>
                         <TableCell>
-                            <ContextMenu menuItems={<DriverContextMenu driver={driver} />}>{driver.name}</ContextMenu>
+                            <ContextMenu menuItems={<DriverContextMenu driver={driver} />}>
+                              <span>{driver.name}</span>
+                            </ContextMenu>
                         </TableCell>
                         <TableCell className="hidden md:table-cell">
-                            <ContextMenu menuItems={<DriverContextMenu driver={driver} />}>{driver.contactNumber}</ContextMenu>
+                            <ContextMenu menuItems={<DriverContextMenu driver={driver} />}>
+                              <span>{driver.contactNumber}</span>
+                            </ContextMenu>
                         </TableCell>
                         <TableCell>
                             <ContextMenu menuItems={<DriverContextMenu driver={driver} />}>
@@ -201,8 +224,8 @@ export default function DriversPage() {
                         </TableCell>
                         <TableCell>
                             <ContextMenu menuItems={<DriverContextMenu driver={driver} />}>
-                                {fatigueLevel ? (
-                                    <Badge variant={getFatigueVariant(fatigueLevel)}>{fatigueLevel}</Badge>
+                                {formattedFatigueLevel ? (
+                                    <Badge variant={getFatigueVariant(formattedFatigueLevel)}>{formattedFatigueLevel}</Badge>
                                 ) : (
                                     <span className="text-muted-foreground">-</span>
                                 )}

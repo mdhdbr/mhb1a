@@ -8,13 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useVehicleJobStore } from '@/stores/job-store';
-import VehicleCard from './vehicle-card';
+import VehicleCard from '@/components/vehicle-card';
 import type { Vehicle, VehicleResult } from '@/lib/types';
-import VehicleCardContextMenu from './vehicle-card-context-menu';
+import VehicleCardContextMenu from '@/components/vehicle-card-context-menu';
 import { ChevronRight, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Separator } from './ui/separator';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Separator } from '@/components/ui/separator';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 type Props = {
     onVehicleSelect: (vehicle: VehicleResult | null) => void;

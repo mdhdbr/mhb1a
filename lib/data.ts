@@ -63,6 +63,7 @@ export const awaitingJobsData: Job[] = [
     title: 'Electronics Delivery',
     from: 'Warehouse A, NYC',
     to: 'Retail Store, NYC',
+    pickupCoordinates: { lat: 40.7128, lng: -74.0060 },
     vehicleType: 'Van',
     status: 'Awaiting',
     requirements: {
@@ -71,12 +72,14 @@ export const awaitingJobsData: Job[] = [
       licenseValidity: true,
       insuranceValidity: true,
     },
+    createdBy: { uid: 'system', name: 'System' },
   },
   {
     id: 'JOB-002',
     title: 'Long-Haul Freight',
     from: 'Port of LA, CA',
     to: 'Distribution Center, AZ',
+    pickupCoordinates: { lat: 33.7361, lng: -118.2626 },
     vehicleType: 'Truck',
     status: 'Awaiting',
     requirements: {
@@ -85,12 +88,14 @@ export const awaitingJobsData: Job[] = [
       licenseValidity: true,
       insuranceValidity: true,
     },
+    createdBy: { uid: 'system', name: 'System' },
   },
   {
     id: 'JOB-003',
     title: 'Local Courier',
     from: 'Downtown Chicago, IL',
     to: 'Suburbs, IL',
+    pickupCoordinates: { lat: 41.8781, lng: -87.6298 },
     vehicleType: 'Car',
     status: 'Awaiting',
     requirements: {
@@ -99,6 +104,7 @@ export const awaitingJobsData: Job[] = [
       licenseValidity: true,
       insuranceValidity: true,
     },
+    createdBy: { uid: 'system', name: 'System' },
   },
 ];
 

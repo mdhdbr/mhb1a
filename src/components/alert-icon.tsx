@@ -1,13 +1,14 @@
 
 "use client";
 
+import type { ReactElement } from 'react';
 import { Hourglass, AlertTriangle, Info, Siren } from "lucide-react";
 import type { AlertIconType } from "@/stores/alert-store";
 import { AcceptanceAlertIcon } from './acceptance-alert-icon';
 import { CalloutAlertIcon, LandlineAlertIcon, IntegrationAlertIcon, FlightAlertIcon, LateToPickupIcon, LateToDropOffIcon, WaitingTimeIcon } from './custom-alert-icons';
 
 
-const iconMap: Record<AlertIconType, JSX.Element> = {
+const iconMap: Record<AlertIconType, ReactElement> = {
   hourglass: <Hourglass className="h-5 w-5 text-destructive" />,
   warning: <AlertTriangle className="h-5 w-5 text-yellow-500" />,
   sos: <Siren className="h-5 w-5 text-red-600" />,

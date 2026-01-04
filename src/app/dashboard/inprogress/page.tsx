@@ -22,6 +22,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { AlertIcon } from '@/components/alert-icon';
 import ContextMenu from '@/components/context-menu';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import type { AlertIconType } from '@/stores/alert-store';
 
 export default function InProgressPage() {
   const { vehicles } = useVehicleJobStore();
@@ -30,7 +31,9 @@ export default function InProgressPage() {
   const router = useRouter();
 
   const getAlertForJob = (jobId: string) => {
-    return alerts.find(alert => alert.id.includes(jobId));
+    return alerts.find(
+      (alert) => alert.jobId === jobId || alert.alertId.includes(jobId)
+    );
   };
 
 
@@ -125,8 +128,8 @@ export default function InProgressPage() {
                 </div>
                  {jobAlert && (
                     <div className="flex items-center gap-2 text-destructive border-t pt-2">
-                        <AlertIcon type={jobAlert.icon} />
-                        <p className="text-sm font-semibold">{jobAlert.hint || jobAlert.description}</p>
+                        <AlertIcon type={(jobAlert.icon as AlertIconType) ?? 'warning'} />
+                        <p className="text-sm font-semibold">{jobAlert.hint || jobAlert.message}</p>
                     </div>
                  )}
                 <div className="text-sm space-y-1 text-muted-foreground">
@@ -192,11 +195,11 @@ export default function InProgressPage() {
                                 <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger>
-                                        <AlertIcon type={jobAlert.icon} />
+                                        <AlertIcon type={(jobAlert.icon as AlertIconType) ?? 'warning'} />
                                     </TooltipTrigger>
                                     <TooltipContent>
                                     <p className="font-semibold">{jobAlert.type}</p>
-                                    <p>{jobAlert.hint || jobAlert.description}</p>
+                                    <p>{jobAlert.hint || jobAlert.message}</p>
                                     </TooltipContent>
                                 </Tooltip>
                                 </TooltipProvider>

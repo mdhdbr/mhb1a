@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { formatDistanceToNow } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAlertStore } from "@/stores/alert-store";
@@ -17,8 +18,8 @@ export default function AlertsPage() {
   const { toast } = useToast();
   const firestore = useFirestore();
 
-  const getPriorityClass = (priority: string) => {
-    return priority === "Critical" ? "bg-red-600 text-white border-red-700" : "";
+  const getSeverityClass = (severity: string) => {
+    return severity === 'critical' ? "bg-red-600 text-white border-red-700" : "";
   }
   
   const handleAddTestAlert = async () => {
@@ -32,7 +33,7 @@ export default function AlertsPage() {
             driverName: "Test Driver",
             fatigueLevel: "high",
             score: 85,
-            source: "manual",
+            source: "control_panel",
             createdAt: serverTimestamp(),
         });
         toast({
@@ -61,18 +62,25 @@ export default function AlertsPage() {
         <CardContent>
             <div className="space-y-4">
                 {alerts.map((alert) => (
-                    <div key={alert.id} className={cn("flex items-center gap-4 p-4 border rounded-lg", alert.priority === 'Critical' ? 'bg-destructive/90 text-destructive-foreground' : 'bg-secondary/50')}>
+                    <div key={alert.alertId} className={cn("flex items-center gap-4 p-4 border rounded-lg", alert.severity === 'critical' ? 'bg-destructive/90 text-destructive-foreground' : 'bg-secondary/50')}>
                         <div className="w-24 text-center">
                             <span className="text-xs text-muted-foreground font-mono">{alert.icon}</span>
                         </div>
                         <div className="flex-1">
                             <div className="flex items-baseline justify-between">
                                 <p className="font-semibold">{alert.type}</p>
-                                <span className={cn("text-xs", alert.priority === 'Critical' ? 'text-destructive-foreground/80' : 'text-muted-foreground')}>{alert.time}</span>
+                                <span className={cn("text-xs", alert.severity === 'critical' ? 'text-destructive-foreground/80' : 'text-muted-foreground')}>
+                                  {alert.triggeredAt ? formatDistanceToNow(alert.triggeredAt.toDate(), { addSuffix: true }) : ''}
+                                </span>
                             </div>
-                            <p className={cn("text-sm", alert.priority === 'Critical' ? 'text-destructive-foreground/90' : 'text-muted-foreground')}>{alert.description}</p>
+                            <p className={cn("text-sm", alert.severity === 'critical' ? 'text-destructive-foreground/90' : 'text-muted-foreground')}>{alert.message}</p>
                         </div>
-                        <Badge variant={alert.priority === 'High' || alert.priority === 'Critical' ? 'destructive' : 'secondary'} className={getPriorityClass(alert.priority)}>{alert.priority}</Badge>
+                        <Badge
+                          variant={alert.severity === 'critical' || alert.severity === 'warning' ? 'destructive' : 'secondary'}
+                          className={getSeverityClass(alert.severity)}
+                        >
+                          {alert.severity}
+                        </Badge>
                     </div>
                 ))}
                 {alerts.length === 0 && (

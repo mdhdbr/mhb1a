@@ -128,7 +128,7 @@ export default function InProgressPage() {
                  {jobAlert && (
                     <div className="flex items-center gap-2 text-destructive border-t pt-2">
                         <AlertIcon type={(jobAlert.icon as AlertIconType) || 'warning'} />
-                        <p className="text-sm font-semibold">{jobAlert.hint || jobAlert.description}</p>
+                        <p className="text-sm font-semibold">{jobAlert.hint || jobAlert.message}</p>
                     </div>
                  )}
                 <div className="text-sm space-y-1 text-muted-foreground">
@@ -188,7 +188,7 @@ export default function InProgressPage() {
                                 </TooltipTrigger>
                                 <TooltipContent>
                                 <p className="font-semibold">{jobAlert.type}</p>
-                                <p>{jobAlert.hint || jobAlert.description}</p>
+                                <p>{jobAlert.hint || jobAlert.message}</p>
                                 </TooltipContent>
                             </Tooltip>
                             </TooltipProvider>

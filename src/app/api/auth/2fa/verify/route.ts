@@ -1,7 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import { decryptSecret, verifyOtp } from '@/lib/otp';
-import { adminDb, adminAuth } from '@/lib/firebase-admin';
+import { getAdminAuth, getAdminDb } from '@/lib/firebase-admin';
 
 export async function POST(req: Request) {
   try {
@@ -15,6 +15,9 @@ export async function POST(req: Request) {
     if (!otp || typeof otp !== 'string' || otp.length !== 6) {
         return NextResponse.json({ error: 'Invalid OTP format.' }, { status: 400 });
     }
+
+    const adminAuth = getAdminAuth();
+    const adminDb = getAdminDb();
 
     const decoded = await adminAuth.verifyIdToken(token);
     const uid = decoded.uid;

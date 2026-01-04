@@ -203,44 +203,56 @@ export default function SmsPage() {
     const [userRoleFilter, setUserRoleFilter] = useState('all');
     
     const allUsers = useMemo(() => {
-        return users.map((user) => ({
+        return users.map((user) => {
+            const status: ChatContact['status'] = user.status === 'online' ? 'online' : 'offline';
+
+            return {
                 id: user.id,
                 name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'Unnamed User',
                 avatar: user.avatar,
-                status: user.status || 'offline',
+                status,
                 lastMessage: `Role: ${user.role || 'user'}`,
                 lastMessageTime: 'Yesterday',
-                type: 'User',
+                type: 'User' as const,
                 role: user.role, // Add role for filtering
                 unreadCount: 0,
-            }));
+            };
+        });
     }, [users]);
     
-    const drivers = useMemo(() => {
-        return driverGridData.map((driver, index) => ({
+    const drivers = useMemo<ChatContact[]>(() => {
+        return driverGridData.map((driver, index) => {
+            const status: ChatContact['status'] = driver.dutyStartTime ? 'online' : 'offline';
+
+            return {
             id: driver.dlNo,
             name: driver.name,
             avatar: undefined,
-            status: driver.dutyStartTime ? 'online' : 'offline',
+            status,
             lastMessage: index === 0 ? 'I\'m running about 10 mins late.' : `Vehicle: ${driver.vehicleRegNum}`,
             lastMessageTime: index === 0 ? '2m' : '1h',
-            type: 'Driver',
+            type: 'Driver' as const,
             unreadCount: index === 0 ? 2 : 0,
-        }));
+            };
+        });
     }, [driverGridData]);
     
     const customerContacts = useMemo(() => {
-         return customers.map((customer, index) => ({
+         return customers.map((customer, index) => {
+            const status: ChatContact['status'] = customer.status === 'Active' ? 'online' : 'offline';
+
+            return {
             id: customer.id,
             name: customer.name,
             avatar: undefined,
-            status: customer.status === 'Active' ? 'online' : 'offline',
+            status,
             lastMessage: index === 1 ? 'Thanks for the update!' : `Rating: ${customer.rating}`,
             lastMessageTime: index === 1 ? '5m' : '3h',
-            type: 'Customer',
+            type: 'Customer' as const,
             rating: customer.rating, // Add rating for filtering
             unreadCount: index === 1 ? 1 : 0,
-        }));
+            };
+        });
     }, [customers]);
     
     // Filtered lists
@@ -286,7 +298,19 @@ export default function SmsPage() {
     
     // Unique values for filters
     const customerRatings = useMemo(() => Array.from(new Set(customers.map(c => c.rating))), [customers]);
-    const userRoles = useMemo(() => Array.from(new Set(users.map(u => u.role).filter(Boolean))) as UserProfile['role'][], [users]);
+    const userRoles = useMemo(
+      () =>
+        Array.from(
+          new Set(
+            users
+              .map((u) => u.role)
+              .filter(
+                (role): role is NonNullable<UserProfile['role']> => Boolean(role)
+              )
+          )
+        ),
+      [users]
+    );
 
 
     return (

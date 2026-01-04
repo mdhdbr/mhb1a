@@ -12,15 +12,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from "@/components/ui/badge";
-import { useClientStore } from '@/stores/client-store';
+import { useCustomerStore, type Customer } from '@/stores/customer-store';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, RefreshCw, Loader2 } from 'lucide-react';
-import type { Client } from '@/stores/client-store';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
-const getRatingVariant = (rating: Client['rating']): "default" | "secondary" | "destructive" | "outline" => {
+const getRatingVariant = (rating: Customer['rating']): "default" | "secondary" | "destructive" | "outline" => {
     switch (rating) {
         case 'Platinum':
         case 'Gold':
@@ -35,7 +34,7 @@ const getRatingVariant = (rating: Client['rating']): "default" | "secondary" | "
     }
 };
 
-const getRatingClass = (rating: Client['rating']) => {
+const getRatingClass = (rating: Customer['rating']) => {
     switch(rating) {
         case 'Platinum': return 'bg-purple-600 text-white border-purple-700';
         case 'Gold': return 'bg-yellow-500 text-black border-yellow-600';
@@ -48,7 +47,7 @@ const getRatingClass = (rating: Client['rating']) => {
 
 
 export default function ClientDataPage() {
-  const { clients, setClients } = useClientStore();
+  const { customers, setCustomers } = useCustomerStore();
   const [filter, setFilter] = useState('');
   const [isSyncing, setIsSyncing] = useState(false);
   const router = useRouter();
@@ -61,13 +60,16 @@ export default function ClientDataPage() {
     // Simulate an API call
     setTimeout(() => {
       // Simulate data change: e.g., toggle status of the first client
-      const updatedClients = clients.map((c, index) => {
+      const updatedCustomers: Customer[] = customers.map((c, index) => {
           if (index === 0) {
-              return { ...c, status: c.status === 'Active' ? 'Inactive' : 'Active' };
+              return {
+                ...c,
+                status: (c.status === 'Active' ? 'Inactive' : 'Active') as Customer['status'],
+              };
           }
           return c;
       });
-      setClients(updatedClients);
+      setCustomers(updatedCustomers);
       
       setIsSyncing(false);
       toast({ title: 'Sync Complete!', description: 'Client contacts and statuses have been updated.' });
@@ -77,7 +79,7 @@ export default function ClientDataPage() {
   const filteredClients = useMemo(() => {
     const lowercasedFilter = filter.toLowerCase();
     
-    return clients.filter(client => {
+    return customers.filter(client => {
       if (!filter) return true;
       
       return (
@@ -86,7 +88,7 @@ export default function ClientDataPage() {
         client.status.toLowerCase().includes(lowercasedFilter)
       );
     });
-  }, [filter, clients]);
+  }, [filter, customers]);
 
   return (
     <Card>

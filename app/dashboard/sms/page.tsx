@@ -195,13 +195,15 @@ export default function SmsPage() {
     const [newMessage, setNewMessage] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState('drivers');
+
+    const normalizeStatus = (status?: string | null): 'online' | 'offline' => (status === 'online' ? 'online' : 'offline');
     
     const allUsers = useMemo(() => {
-        return users.map((user, index) => ({
+        return users.map((user, index): ChatContact => ({
                 id: user.id,
                 name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'Unnamed User',
                 avatar: user.avatar,
-                status: user.status || 'offline',
+                status: normalizeStatus(user.status),
                 lastMessage: `Role: ${user.role || 'user'}`,
                 lastMessageTime: 'Yesterday',
                 type: 'User',
@@ -210,7 +212,7 @@ export default function SmsPage() {
     }, [users]);
     
     const drivers = useMemo(() => {
-        return driverGridData.map((driver, index) => ({
+        return driverGridData.map((driver, index): ChatContact => ({
             id: driver.dlNo,
             name: driver.name,
             avatar: undefined,
@@ -223,7 +225,7 @@ export default function SmsPage() {
     }, [driverGridData]);
     
     const customerContacts = useMemo(() => {
-         return customers.map((customer, index) => ({
+         return customers.map((customer, index): ChatContact => ({
             id: customer.id,
             name: customer.name,
             avatar: undefined,

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -231,7 +231,7 @@ function CustomerLoginForm() {
     );
 }
 
-export default function LoginPage() {
+function LoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isUserLoading } = useUser();
@@ -271,5 +271,19 @@ export default function LoginPage() {
             <div className="text-center"><Button variant="link" asChild className="text-sm"><Link href="/">← Back to Home</Link></Button></div>
         </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+          <div className="flex items-center gap-2"><Logo className="h-8 w-8 animate-spin" /><p className="text-muted-foreground">Loading...</p></div>
+        </main>
+      }
+    >
+      <LoginPageInner />
+    </Suspense>
   );
 }

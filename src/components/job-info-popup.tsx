@@ -30,7 +30,7 @@ export default function JobInfoPopup({ vehicle, onClose, onAssignSuccess }: Prop
     const { toast } = useToast();
     const { job, driver } = vehicle;
     const showEta = job?.status && eligibleEtaStatuses.includes(job.status);
-    const hasJob = job?.id;
+    const hasJob = Boolean(job?.id);
 
     const { pendingJob } = useManualDispatchStore();
     const { assignJobToVehicle } = useVehicleJobStore();
