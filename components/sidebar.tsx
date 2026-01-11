@@ -165,6 +165,9 @@ export default function AppSidebar() {
 
   const menuItems = userProfile ? getVisibleMenuItems(allPages) : allPages.filter(page => !page.adminOnly);
 
+  // Debug: Log menu items to see what's being filtered
+  console.log('Menu items:', menuItems.map(item => ({ label: item.label, href: item.href, adminOnly: item.adminOnly })));
+
 
   return (
     <>
@@ -176,7 +179,7 @@ export default function AppSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        {isProfileLoading ? (
+        {isProfileLoading && userProfile ? (
           <div className="p-2 space-y-1">
             {Array.from({ length: 8 }).map((_, i) => (
               <SidebarMenuSkeleton key={i} showIcon />
