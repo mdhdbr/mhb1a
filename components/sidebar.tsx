@@ -134,6 +134,11 @@ export default function AppSidebar() {
             
             const pageDefinition = allPages.flatMap(p => p.children ? p.children : p).find(p => p.href === href);
             
+            // If no user profile (bypass mode), allow all non-admin pages
+            if (!userProfile) {
+                return !pageDefinition?.adminOnly;
+            }
+            
             if (userProfile?.role === 'admin') return true;
             if (pageDefinition?.adminOnly) return false;
 

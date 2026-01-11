@@ -96,7 +96,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
     return () => unsubscribe(); // Cleanup
   }, [auth]); // Depends on the auth instance
 
-  // Memoize the context value
+  // Memoize context value
   const contextValue = useMemo((): FirebaseContextState => {
     const servicesAvailable = !!(firebaseApp && firestore && auth && storage);
     return {
