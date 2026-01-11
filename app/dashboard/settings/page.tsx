@@ -778,6 +778,29 @@ export default function SettingsPage() {
                           <Button variant="secondary" onClick={handleBackup} disabled={isBackingUp || selectedCollections.length === 0} className="h-11">{isBackingUp && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{isBackingUp ? 'Backing up...' : <><FileDown className="mr-2 h-4 w-4"/>Backup to Excel</>}</Button>
                       </CardFooter>
                   </Card>
+                  
+                  <Card className="mt-6">
+                      <CardHeader>
+                          <CardTitle>Incident Report</CardTitle>
+                          <CardDescription>File and manage incident reports for safety and compliance tracking.</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                          <div className="flex items-center justify-between p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                              <div className="flex items-center gap-3">
+                                  <div className="p-2 bg-orange-100 rounded-full">
+                                      <FileDown className="h-5 w-5 text-orange-600" />
+                                  </div>
+                                  <div>
+                                      <p className="font-semibold">Incident Report System</p>
+                                      <p className="text-sm text-muted-foreground">Create, view, and manage incident reports for safety tracking.</p>
+                                  </div>
+                              </div>
+                              <Button onClick={() => window.location.href = '/dashboard/incident-report'} className="bg-orange-600 hover:bg-orange-700">
+                                  Open Incident Report
+                              </Button>
+                          </div>
+                      </CardContent>
+                  </Card>
               </TabsContent>
             </>
           )}
