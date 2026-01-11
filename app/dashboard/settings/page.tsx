@@ -17,7 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Loader2, ShieldCheck, ShieldOff, Copy, User, Users, Lock, Database, FileDown, Palette, Briefcase, Camera, Bell } from 'lucide-react';
+import { Loader2, ShieldCheck, ShieldOff, Copy, User, Users, Lock, Database, FileDown, Palette, Briefcase, Camera, Bell, Activity } from 'lucide-react';
 import Image from 'next/image';
 import {
     AlertDialog,
@@ -33,6 +33,7 @@ import {
 import type { UserProfile } from '@/lib/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AgentStatusTable from '@/components/agent-status-table';
+import UserActivityTracker from '@/components/user-activity-tracker';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getInitials, cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -618,6 +619,9 @@ export default function SettingsPage() {
               <TabsTrigger value="backup" className="w-full justify-start py-2 px-3 text-base data-[state=active]:bg-background data-[state=active]:shadow-sm">
                 <Database className="mr-2 h-4 w-4" />Backup
               </TabsTrigger>
+              <TabsTrigger value="activity" className="w-full justify-start py-2 px-3 text-base data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                <Activity className="mr-2 h-4 w-4" />User Activity
+              </TabsTrigger>
             </>
           )}
         </TabsList>
@@ -778,6 +782,9 @@ export default function SettingsPage() {
                           <Button variant="secondary" onClick={handleBackup} disabled={isBackingUp || selectedCollections.length === 0} className="h-11">{isBackingUp && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{isBackingUp ? 'Backing up...' : <><FileDown className="mr-2 h-4 w-4"/>Backup to Excel</>}</Button>
                       </CardFooter>
                   </Card>
+              </TabsContent>
+              <TabsContent value="activity">
+                  <UserActivityTracker />
               </TabsContent>
             </>
           )}
