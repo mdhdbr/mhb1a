@@ -137,7 +137,13 @@ export default function AppSidebar() {
             if (userProfile?.role === 'admin') return true;
             if (pageDefinition?.adminOnly) return false;
 
-            return userProfile?.allowedPages?.includes(href) ?? false;
+            // If user has allowedPages, check if this page is included
+            if (userProfile?.allowedPages && userProfile.allowedPages.length > 0) {
+                return userProfile.allowedPages.includes(href);
+            }
+            
+            // If no allowedPages specified, allow access to non-admin pages
+            return true;
         };
 
         if (item.children) {
@@ -152,7 +158,7 @@ export default function AppSidebar() {
     }, []);
   };
 
-  const menuItems = userProfile ? getVisibleMenuItems(allPages) : [];
+  const menuItems = userProfile ? getVisibleMenuItems(allPages) : allPages.filter(page => !page.adminOnly);
 
 
   return (
