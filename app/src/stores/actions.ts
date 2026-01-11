@@ -286,7 +286,7 @@ const generateAlerts = (): Alert[] => {
 };
 
 function useUsersInitializer() {
-  const { isUserLoading } = useUser();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const { setUsers, setLoading, setError } = useUserStore();
 
@@ -302,15 +302,54 @@ function useUsersInitializer() {
         const usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile));
         setUsers(usersData);
       },
-      (error) => {
+      async (error) => {
         console.error("Error fetching users:", error);
-        setError(error);
+
+        const message = typeof (error as any)?.message === 'string' ? (error as any).message : '';
+        const code = typeof (error as any)?.code === 'string' ? (error as any).code : '';
+        const isPermissionDenied =
+          code.includes('permission-denied') ||
+          message.includes('permission-denied') ||
+          message.includes('Missing or insufficient permissions');
+
+        if (isPermissionDenied) {
+          try {
+            if (!user) {
+              setUsers([]);
+              return;
+            }
+
+            const token = await user.getIdToken();
+            const res = await fetch('/api/admin/users', {
+              method: 'GET',
+              headers: {
+                authorization: `Bearer ${token}`,
+              },
+            });
+
+            if (res.ok) {
+              const body = await res.json();
+              if (Array.isArray(body?.users)) {
+                setUsers(body.users as UserProfile[]);
+                return;
+              }
+            }
+
+            setUsers([]);
+          } catch (apiError) {
+            console.error('Admin users API fallback failed:', apiError);
+            setUsers([]);
+          }
+          return;
+        }
+
+        setError(error as Error);
       }
     );
 
     // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, [firestore, isUserLoading, setUsers, setLoading, setError]);
+  }, [firestore, isUserLoading, setUsers, setLoading, setError, user]);
 }
 
 export function StoreInitializer() {

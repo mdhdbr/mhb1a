@@ -84,7 +84,7 @@ export default function UserTable({ filterRole = 'all' }: { filterRole?: 'all' |
       isLoading: state.isLoading,
   }));
 
-  const isAdmin = userProfile?.role === 'admin';
+  const isAdmin = (userProfile?.role || '').toLowerCase() === 'admin';
   
   const filteredUsers = useMemo(() => {
     if (filterRole === 'all') {

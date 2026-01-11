@@ -27,27 +27,27 @@ import {
 
 
 export const summaryData: SummaryData = {
-  totalVehicles: 15,
-  unreadMessages: 3,
-  activeTrips: 2,
-  idleDrivers: 3,
-  criticalAlerts: 4,
+  totalVehicles: 500,
+  unreadMessages: 12,
+  activeTrips: 45,
+  idleDrivers: 8,
+  criticalAlerts: 2,
 };
 
 export const fleetCompositionData: ChartData = [
-  { name: 'SUV', value: 2 },
-  { name: 'SEDAN', value: 2 },
-  { name: 'PREMIUM_SEDAN', value: 1 },
-  { name: 'TRUCK_5T', value: 1 },
-  { name: 'MINI_BUS', value: 1 },
-  { name: 'TRUCK_10T', value: 1 },
-  { name: 'LUXURY_CAR', value: 1 },
-  { name: 'FORKLIFT', value: 1 },
-  { name: 'LIGHT_BUS', value: 1 },
-  { name: 'TRUCK_15T', value: 1 },
-  { name: 'MPV', value: 1 },
-  { name: 'HEAVY_BUS', value: 1 },
-  { name: 'FLATBED', value: 1 },
+  { name: 'SUV', value: 120 },
+  { name: 'SEDAN', value: 85 },
+  { name: 'PREMIUM_SEDAN', value: 45 },
+  { name: 'TRUCK_5T', value: 65 },
+  { name: 'MINI_BUS', value: 35 },
+  { name: 'TRUCK_10T', value: 40 },
+  { name: 'LUXURY_CAR', value: 25 },
+  { name: 'FORKLIFT', value: 15 },
+  { name: 'LIGHT_BUS', value: 30 },
+  { name: 'TRUCK_15T', value: 20 },
+  { name: 'MPV', value: 18 },
+  { name: 'HEAVY_BUS', value: 12 },
+  { name: 'FLATBED', value: 10 },
 ];
 
 export const driverFatigueData: ChartData = [
@@ -129,16 +129,16 @@ export const vehiclesData: Vehicle[] = [
       model: 'FH16',
       capacity: '15T',
       status: 'On Duty',
-      position: [24.76, 46.71], // Current position somewhere on the actual route
-      driver: { id: 'ARC', name: 'Ali Ahmed', phone: '+966 50 123 4567', earnings: 350.75 },
+      position: [24.7136, 46.6753], // Riyadh
+      driver: { id: 'ARC', name: 'Ali Ahmed', phone: '+966 50 123 4567', earnings: 850.75 },
       job: { 
         id: '2448727', 
         status: 'Completed',
         service: 'Car',
         account: 'Registered Customer (Normal)',
-        pickup: 'CT1 3QL',
-        pickupDate: '21/03/2025 08:25',
-        flight: 'UA904',
+        pickup: 'King Khalid Airport',
+        pickupDate: '11/01/2026 08:25',
+        flight: 'SV101',
         pax: '3 PAX',
         distance: 125, 
         dwellTime: '15m', 
@@ -162,8 +162,8 @@ export const vehiclesData: Vehicle[] = [
       model: 'Camry',
       capacity: '5 Seats',
       status: 'Idle',
-      position: [21.4858, 39.1925],
-      driver: { id: 'DRV-02', name: 'Fatima Khan', phone: '+966 55 987 6543', earnings: 120.00 },
+      position: [21.3891, 39.8579], // Jeddah
+      driver: { id: 'DRV-02', name: 'Fatima Khan', phone: '+966 55 987 6543', earnings: 320.00 },
       job: { id: null, status: 'Empty', distance: 0, dwellTime: '3h 45m', eta: null, plannedRoute: null, actualRoute: null, service: null, account: null, pickup: null, pickupDate: null, flight: null, pax: null },
       telemetry: { fuel: 92, battery: 100 },
     },
@@ -176,8 +176,8 @@ export const vehiclesData: Vehicle[] = [
         model: 'Transit',
         capacity: '7 Seats',
         status: 'On Break',
-        position: [26.4207, 50.0888],
-        driver: { id: 'DRV-03', name: 'Hassan Ibrahim', phone: '+966 53 210 9876', earnings: 410.50 },
+        position: [26.4207, 50.0888], // Dammam
+        driver: { id: 'DRV-03', name: 'Hassan Ibrahim', phone: '+966 53 210 9876', earnings: 610.50 },
         job: { 
             id: 'JOB-124', 
             status: 'At Drop-off Location', 
@@ -188,8 +188,8 @@ export const vehiclesData: Vehicle[] = [
             actualRoute: [[26.3, 50.0], [26.35, 50.05], [26.4207, 50.0888]],
             service: 'Delivery',
             account: 'Corporate Cargo',
-            pickup: 'Warehouse B',
-            pickupDate: '01/08/2024 14:00',
+            pickup: 'Dammam Port',
+            pickupDate: '11/01/2026 14:00',
             flight: null,
             pax: null
         },
@@ -208,7 +208,7 @@ export const vehiclesData: Vehicle[] = [
         model: 'Tahoe',
         capacity: '8 Seats',
         status: 'Offline',
-        position: [24.774265, 46.738586],
+        position: [24.774265, 46.738586], // Riyadh
         driver: { id: 'DRV-04', name: 'Nour Abdullah', phone: '+966 54 876 5432', earnings: 0 },
         job: { id: null, status: 'Received', distance: 210, dwellTime: 'N/A', eta: null, plannedRoute: null, actualRoute: null, service: null, account: null, pickup: null, pickupDate: null, flight: null, pax: null },
         telemetry: { fuel: 60, battery: 98 },
@@ -222,8 +222,8 @@ export const vehiclesData: Vehicle[] = [
         model: 'Actros',
         capacity: '50 Seats',
         status: 'Maintenance',
-        position: [21.4958, 39.2925],
-        driver: { id: 'DRV-05', name: 'Khalid Omar', phone: '+966 56 111 2222', earnings: 25.00 },
+        position: [21.4958, 39.2925], // Jeddah
+        driver: { id: 'DRV-05', name: 'Khalid Omar', phone: '+966 56 111 2222', earnings: 125.00 },
         job: { id: null, status: 'Accepted', distance: 0, dwellTime: '2d 5h', eta: null, plannedRoute: null, actualRoute: null, service: null, account: null, pickup: null, pickupDate: null, flight: null, pax: null },
         telemetry: { fuel: 30, battery: 75 },
     },
@@ -236,15 +236,15 @@ export const vehiclesData: Vehicle[] = [
       model: 'Phantom',
       capacity: '4 Seats',
       status: 'On Duty',
-      position: [24.8, 46.7], 
-      driver: { id: 'DRV-06', name: 'Yusuf Al-Malik', phone: '+966 59 999 9999', earnings: 1500.00 },
+      position: [24.8, 46.7], // Riyadh
+      driver: { id: 'DRV-06', name: 'Yusuf Al-Malik', phone: '+966 59 999 9999', earnings: 2500.00 },
       job: { 
         id: 'VIP-001', 
         status: 'Arrived', 
         service: 'VVIP',
         account: 'Royal Court',
         pickup: 'King Khalid Airport',
-        pickupDate: '02/08/2024 10:00',
+        pickupDate: '11/01/2026 10:00',
         flight: 'SV101',
         pax: '1PAX',
         distance: 50, 
@@ -269,7 +269,7 @@ export const allPages: Page[] = [
     { href: '/dashboard/tracking', label: 'Tracking', icon: Tractor },
     { href: '/dashboard/awaiting-allocation', label: 'Awaiting Allocation', icon: Route },
     { href: '/dashboard/manual-dispatch', label: 'Manual Dispatch', icon: Send },
-    { href: '/dashboard/location-picker', label: 'Location Picker', icon: MapPin, adminOnly: true }, // Should be hidden
+    { href: '/dashboard/location-picker', label: 'Location Picker', icon: MapPin, adminOnly: true },
     { href: '/dashboard/jobs', label: 'Jobs', icon: Briefcase },
     { href: '/dashboard/alerts', label: 'Alerts', icon: Bell },
 
